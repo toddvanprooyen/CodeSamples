@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Triangles</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root>Loading...</app-root>
+  <div id="Task1A">
+    <div id="Task1AInput">
+      <p>Please enter the address of the triangle. Where row is (A-F) and column is (1-12); eg. A10, C6, et cetera. </p>
+      <input id="addressInput" maxlength="3" />
+
+    </div>
+    <div id="Task1AOutput">
+      <canvas id="Canvas1A" width="60" height="60" />
+    </div>
+  </div>
+  <script language="JavaScript" type="text/javascript">
+    var input = document.getElementById("addressInput");
+    input.addEventListener("input", renderTriangleFromAddress, false)
+
+
+    function renderTriangleFromAddress() {
+      var verteces = getVerteces(input.textContent);
+      var canvasId = 'Canvas1A';
+      var scale = 10;// verteces returned from webAPI
+      drawTriangle(verteces, canvasId, scale);
+
+    }
+
+    function drawTriangle(verteces, canvasId, scale) {
+      var scale, Ax, Ay, Bx, By, Cx, Cy;
+      //we're going to apply scaling here at render
+      Ax = (scale * verteces[0]);
+      Ay = (scale * verteces[1]);
+      Bx = (scale * verteces[2]);
+      By = (scale * verteces[3]);
+      Cx = (scale * verteces[4]);
+      Cy = (scale * verteces[5]);
+
+      var canvas = document.getElementById(canvasId);
+      if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'blue';
+        ctx.strokeStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(Ax, Ay);
+        ctx.lineTo(Bx, By);
+        ctx.lineTo(Cx, Cy);
+        ctx.closePath();//returns path to path origin Ax, Ay
+        ctx.fill(); //fills triangle with blue
+        ctx.stroke(); // draws a white stroke around triangle
+
+      }
+    }
+
+    const url1A = 'http://localhost:59325/api/Triangles/Verteces/'
+
+
+    function getVerteces(addr) {
+
+      let inputData = {
+        address: addr
+      }
+      let fetchData = {
+        method: 'GET',
+        body: inputData,
+        headers: new Headers()
+      }
+      let data = await fetch(url1A, fetchData);
+      let resolvedData = await data.json();
+      return resolvedData;
+
+
+    }
+
+  </script>
+  <div id="Task1B">
+    <div id="Task1BInput">
+      <p>Please enter the X, Y coordinates for the verteces of the triangle </p>
+      <p>Vertex A: X value in px</p>
+      <input id="AxInput" maxlength="2" />
+      <p>Vertex A: Y value in px</p>
+      <input id="AyInput" maxlength="2" />
+      <p>Vertex B: X value in px</p>
+      <input id="BxInput" maxlength="2" />
+      <p>Vertex B: Y value in px</p>
+      <input id="ByInput" maxlength="2" />
+      <p>Vertex C: X value in px</p>
+      <input id="CxInput" maxlength="2" />
+      <p>Vertex C: Y value in px</p>
+      <input id="CyInput" maxlength="2" />
+      <button id="Task1Bbutton">Click Here</button>
+    </div>
+    <div id="Task1BOutput">
+      <p>Address:</p>
+      <p id="Task1BResult"></p>
+    </div>
+  </div>
+  <script language="JavaScript" type="text/javascript">
+    var button = document.getElementById("Task1Bbutton");
+    button.addEventListener("input", renderAddress, false)
+
+
+    function renderAddress() {
+      var verteces = getVertecesFromInput(10);
+      var address = getAddress(verteces);
+      var addressElement = getElementById("Task1BOutput");
+      addressElement.textContent = address;
+    }
+
+    function getVertecesFromInput(scale) {
+      var Ax, Ay, Bx, By, Cx, Cy;
+      //we're assuming that the input verteces coordinate values are at scale - so 
+      Ax = (getNumberFromElement("AxInput") / scale);
+      Ay = (getNumberFromElement("AyInput") / scale);
+      Bx = (getNumberFromElement("BxInput") / scale);
+      By = (getNumberFromElement("ByInput") / scale);
+      Cx = (getNumberFromElement("CxInput") / scale);
+      Cy = (getNumberFromElement("CyInput") / scale);
+
+      return [Ax, Ay, Bx, By, Cx, Cy];
+
+      }
+    }
+
+    function getNumberFromElement(elementId) {
+      var element = getElementById(elementId);
+      var text = element.textContent;
+      return Number(text);
+    }
+
+
+    const url1B = 'http://localhost:59325/api/Triangles/Address/'
+
+
+    function getAddress(verteces) {
+
+      let inputData = {
+        verteces: verteces
+      }
+      let fetchData = {
+        method: 'GET',
+        body: inputData,
+        headers: new Headers()
+      }
+      let data = await fetch(url1B, fetchData);
+      let resolvedData = await data.json();
+      return resolvedData;
+
+
+    }
+
+  </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+</body>
+</html>
